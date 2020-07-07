@@ -26,8 +26,6 @@ class ViewController: BaseViewController{
         self.setupActivityIndicatorView()
         self.setUpNavigation()
         self.setUpTableview()
-        
-        //self.apiCall()
         self.initViewModel()
         // Do any additional setup after loading the view.
     }
@@ -49,7 +47,7 @@ class ViewController: BaseViewController{
         tableView.delegate = self
         tableView.backgroundColor = UIColor.white
         // register your class with cell identifier
-        self.tableView.register(myCell.self as AnyClass, forCellReuseIdentifier: "Cell")
+        self.tableView.register(myCell.self as AnyClass, forCellReuseIdentifier: Config.cellidentifier)
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.topAnchor.constraint(equalTo:view.safeAreaLayoutGuide.topAnchor).isActive = true
@@ -74,7 +72,7 @@ class ViewController: BaseViewController{
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
     // MARK: - Tableview delegate
        func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell:myCell? = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? myCell
+        let cell:myCell? = tableView.dequeueReusableCell(withIdentifier: Config.cellidentifier, for: indexPath) as? myCell
             cell?.listing = viewModel.roomForIndexPath(indexPath)
            self.title = viewModel.title
            return cell!

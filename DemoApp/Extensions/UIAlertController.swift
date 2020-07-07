@@ -19,7 +19,7 @@ enum AlertAction:String {
     var title:String {
         switch self {
         case .Setting:
-            return "Settings"
+            return ""
         default:
             return self.rawValue
         }
