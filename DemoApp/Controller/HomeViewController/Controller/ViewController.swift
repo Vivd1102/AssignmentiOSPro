@@ -10,11 +10,17 @@ import UIKit
 import SDWebImage
 
 
-class ViewController: UIViewController,UITableViewDelegate, UITableViewDataSource {
+class ViewController: BaseViewController{
     
     var tableView = UITableView()
     var dataArray : NSArray = [] //Array of your data to be displayed
     var activityView: UIActivityIndicatorView?
+    
+    lazy var viewModel: HomeViewModel = {
+        let obj = HomeViewModel(userService: UserService())
+        self.baseVwModel = obj
+        return obj
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,7 +37,7 @@ class ViewController: UIViewController,UITableViewDelegate, UITableViewDataSourc
         tableView.leftAnchor.constraint(equalTo:view.safeAreaLayoutGuide.leftAnchor).isActive = true
         tableView.rightAnchor.constraint(equalTo:view.safeAreaLayoutGuide.rightAnchor).isActive = true
         tableView.bottomAnchor.constraint(equalTo:view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-        self.apiCall()
+        //self.apiCall()
         // Do any additional setup after loading the view.
     }
     
@@ -41,47 +47,71 @@ class ViewController: UIViewController,UITableViewDelegate, UITableViewDataSourc
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor:UIColor(red: 1, green: 1, blue: 1, alpha: 1)]
     }
     
-
-    // MARK: - Tableview delegate
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-       // let myCell = tableView.dequeueReusableCellWithIdentifier("myIdentifier", forIndexPath: indexPath)
-        var cell:myCell? = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? myCell
-        if cell == nil {
-            cell = myCell(style: UITableViewCell.CellStyle.default, reuseIdentifier: "Cell")
-        }
-        if let data = self.dataArray[indexPath.row] as? [String:AnyObject]{
-            cell?.nameLabel.text = data["title"] as? String
-            cell?.jobTitleDetailedLabel.text = data["description"] as? String
-            cell?.profileImageView.sd_imageIndicator = SDWebImageActivityIndicator.gray
-            cell?.profileImageView.sd_setImage(with: URL(string: data["imageHref"] as? String ?? ""), completed: nil)
-        }
-        return cell!
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.dataArray.count
-    }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-           return 80
-       }
-    
-    func apiCall(){
-        let service = UserService()
-        service.getFactslist( target: self, complition: { (response) in
-            DispatchQueue.main.async {
-                if let eventsData = response as? Dictionary<String,Any>{
-                    self.dataArray = eventsData["rows"] as! NSArray
-                    self.navigationItem.title = eventsData["title"] as? String
-                }
-                self.tableView.reloadData()
+    func initViewModel() {
+            
+            viewModel.reloadListViewClosure = { [weak self] () in
+//                DispatchQueue.main.async {
+//                    self?.indicator.stopAnimating()
+//                    self?.tblView?.reloadData()
+//                }
             }
-        })
-    }
 
-
+        viewModel.fetchListing()
+        }
+        
 }
 
+//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        let offsetY = scrollView.contentOffset.y
+//        let contentHeight = scrollView.contentSize.height
+//        if (offsetY > contentHeight - scrollView.frame.height * 4)  && !isLoading {
+//            loadMoreData()
+//        }
+//    }
+//
+//    func loadMoreData() {
+//        if !self.isLoading {
+//            self.isLoading = true
+//            DispatchQueue.global().async {
+//                // Fake background loading task for 2 seconds
+//                sleep(2)
+//                // Download more data here
+//                DispatchQueue.main.async {
+//                    self.isLoading = false
+//                    self.pagenum = self.pagenum + 1
+////                    self.limit = self.limit + 10
+//                    self.viewModel.fetchListing(pagenum:self.pagenum,limit:self.limit)
+//                }
+//            }
+//        }
+//    }
+
+extension ViewController: UITableViewDataSource, UITableViewDelegate {
+    // MARK: - Tableview delegate
+       func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+          // let myCell = tableView.dequeueReusableCellWithIdentifier("myIdentifier", forIndexPath: indexPath)
+           var cell:myCell? = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? myCell
+           if cell == nil {
+               cell = myCell(style: UITableViewCell.CellStyle.default, reuseIdentifier: "Cell")
+           }
+           if let data = self.dataArray[indexPath.row] as? [String:AnyObject]{
+               cell?.nameLabel.text = data["title"] as? String
+               cell?.jobTitleDetailedLabel.text = data["description"] as? String
+               cell?.profileImageView.sd_imageIndicator = SDWebImageActivityIndicator.gray
+               cell?.profileImageView.sd_setImage(with: URL(string: data["imageHref"] as? String ?? ""), completed: nil)
+           }
+           return cell!
+       }
+       
+       func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+           return self.dataArray.count
+       }
+       
+       func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+              return 80
+          }
+    
+}
 
 class myCell: UITableViewCell {
        let containerView:UIView = {
