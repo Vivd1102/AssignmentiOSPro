@@ -8,14 +8,13 @@
 
 import UIKit
 import SDWebImage
-
+import MaterialActivityIndicator
 
 class ViewController: BaseViewController{
     
     var tableView = UITableView()
-    var dataArray : NSArray = [] //Array of your data to be displayed
-    var activityView: UIActivityIndicatorView?
-    
+    private let indicator = MaterialActivityIndicatorView()
+
     lazy var viewModel: HomeViewModel = {
         let obj = HomeViewModel(userService: UserService())
         self.baseVwModel = obj
@@ -24,7 +23,27 @@ class ViewController: BaseViewController{
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.setupActivityIndicatorView()
         self.setUpNavigation()
+        self.setUpTableview()
+        
+        //self.apiCall()
+        self.initViewModel()
+        // Do any additional setup after loading the view.
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        indicator.startAnimating()
+    }
+    
+    func setUpNavigation() {
+     self.navigationController?.navigationBar.barTintColor = UIColor(red: 0.2431372549, green: 0.7647058824, blue: 0.8392156863, alpha: 1)
+     self.navigationController?.navigationBar.isTranslucent = false
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor:UIColor(red: 1, green: 1, blue: 1, alpha: 1)]
+    }
+    
+    func setUpTableview(){
         tableView = UITableView(frame: self.view.bounds, style: UITableView.Style.plain)
         tableView.dataSource = self
         tableView.delegate = self
@@ -37,22 +56,12 @@ class ViewController: BaseViewController{
         tableView.leftAnchor.constraint(equalTo:view.safeAreaLayoutGuide.leftAnchor).isActive = true
         tableView.rightAnchor.constraint(equalTo:view.safeAreaLayoutGuide.rightAnchor).isActive = true
         tableView.bottomAnchor.constraint(equalTo:view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-        //self.apiCall()
-        self.initViewModel()
-        // Do any additional setup after loading the view.
-    }
-    
-    func setUpNavigation() {
-     self.navigationController?.navigationBar.barTintColor = UIColor(red: 0.2431372549, green: 0.7647058824, blue: 0.8392156863, alpha: 1)
-     self.navigationController?.navigationBar.isTranslucent = false
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor:UIColor(red: 1, green: 1, blue: 1, alpha: 1)]
     }
     
     func initViewModel() {
-            
             viewModel.reloadListViewClosure = { [weak self] () in
                 DispatchQueue.main.async {
-//                    self?.indicator.stopAnimating()
+                    self?.indicator.stopAnimating()
                     self?.tableView.reloadData()
                 }
             }
@@ -60,11 +69,11 @@ class ViewController: BaseViewController{
         }
         
 }
+// MARK: - Tableview Delagte methods
 
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
     // MARK: - Tableview delegate
        func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-          // let myCell = tableView.dequeueReusableCellWithIdentifier("myIdentifier", forIndexPath: indexPath)
         let cell:myCell? = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? myCell
             cell?.listing = viewModel.roomForIndexPath(indexPath)
            self.title = viewModel.title
@@ -77,13 +86,11 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
        
        func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
               return viewModel.heightForIndexPath(indexPath)
-          }
-    
+        }
 }
-
+// MARK: - Custom Cell
 class myCell: UITableViewCell {
 
-    
        let containerView:UIView = {
            let view = UIView()
            view.translatesAutoresizingMaskIntoConstraints = false
@@ -95,7 +102,6 @@ class myCell: UITableViewCell {
            let img = UIImageView()
            img.contentMode = .scaleAspectFill // image will never be strecthed vertially or horizontally
            img.translatesAutoresizingMaskIntoConstraints = false // enable autolayout
-           img.layer.cornerRadius = 35
            img.clipsToBounds = true
            return img
        }()
@@ -120,7 +126,6 @@ class myCell: UITableViewCell {
        }()
        
        
-
        override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
            super.init(style: style, reuseIdentifier: reuseIdentifier)
            
@@ -150,27 +155,30 @@ class myCell: UITableViewCell {
        }
        
        required init?(coder aDecoder: NSCoder) {
-           
            super.init(coder: aDecoder)
        }
     
     open var listing:Rows? {
             didSet {
                 
+                self.nameLabel.text  = listing?.title
+                self.jobTitleDetailedLabel.text = listing?.description
                 DispatchQueue.main.async {
                     self.profileImageView.sd_setImage(with: URL(string: (self.listing?.imageHref ?? "")), placeholderImage: UIImage(named: ""))
                 }
-                profileImageView.layer.borderWidth=1.0
-                profileImageView.layer.cornerRadius = profileImageView.frame.size.height/2
-                profileImageView.clipsToBounds = true
-                profileImageView.layer.masksToBounds = true
-                
-                self.nameLabel.text  = listing?.title
-                self.jobTitleDetailedLabel.text = listing?.description
-                
-                
-                
             }
         }
+}
 
+extension ViewController{
+    private func setupActivityIndicatorView() {
+        self.view.addSubview(indicator)
+        setupActivityIndicatorViewConstraints()
+    }
+
+    private func setupActivityIndicatorViewConstraints() {
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        indicator.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+    }
 }

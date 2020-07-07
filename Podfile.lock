@@ -1,18 +1,22 @@
 PODS:
+  - MaterialActivityIndicator (0.0.6)
   - SDWebImage (5.8.0):
     - SDWebImage/Core (= 5.8.0)
   - SDWebImage/Core (5.8.0)
 
 DEPENDENCIES:
+  - MaterialActivityIndicator
   - SDWebImage (~> 5.0)
 
 SPEC REPOS:
   trunk:
+    - MaterialActivityIndicator
     - SDWebImage
 
 SPEC CHECKSUMS:
+  MaterialActivityIndicator: 5061a52fadf7d22533734f2d34806311331bc424
   SDWebImage: 84000f962cbfa70c07f19d2234cbfcf5d779b5dc
 
-PODFILE CHECKSUM: 67fee794f1be4d206ccd9903c38e9d505f5b50ae
+PODFILE CHECKSUM: f223d4a608dc6e897fcbb761c6b34321e8944e7c
 
 COCOAPODS: 1.8.4

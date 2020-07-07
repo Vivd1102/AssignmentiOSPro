@@ -7,6 +7,7 @@ target 'DemoApp' do
 
   # Pods for DemoApp
   pod 'SDWebImage', '~> 5.0'
+  pod 'MaterialActivityIndicator'
 
   target 'DemoAppTests' do
     inherit! :search_paths

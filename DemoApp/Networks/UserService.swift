@@ -10,14 +10,12 @@ import Foundation
 import UIKit
 
 protocol UserServiceProtocol {
-        
     func dofectlisting(completion:@escaping (NSDictionary?) -> Void)
 }
 
 public class UserService: APIService, UserServiceProtocol {
 
     func dofectlisting( completion: @escaping (NSDictionary?) -> Void) {
-
         super.startService(with: .GET, parameters: nil,files: []) { (result) in
               DispatchQueue.main.async {
                   switch result {
