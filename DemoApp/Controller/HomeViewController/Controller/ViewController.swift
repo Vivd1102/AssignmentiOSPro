@@ -38,6 +38,7 @@ class ViewController: BaseViewController{
         tableView.rightAnchor.constraint(equalTo:view.safeAreaLayoutGuide.rightAnchor).isActive = true
         tableView.bottomAnchor.constraint(equalTo:view.safeAreaLayoutGuide.bottomAnchor).isActive = true
         //self.apiCall()
+        self.initViewModel()
         // Do any additional setup after loading the view.
     }
     
@@ -50,70 +51,39 @@ class ViewController: BaseViewController{
     func initViewModel() {
             
             viewModel.reloadListViewClosure = { [weak self] () in
-//                DispatchQueue.main.async {
+                DispatchQueue.main.async {
 //                    self?.indicator.stopAnimating()
-//                    self?.tblView?.reloadData()
-//                }
+                    self?.tableView.reloadData()
+                }
             }
-
         viewModel.fetchListing()
         }
         
 }
 
-//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        let offsetY = scrollView.contentOffset.y
-//        let contentHeight = scrollView.contentSize.height
-//        if (offsetY > contentHeight - scrollView.frame.height * 4)  && !isLoading {
-//            loadMoreData()
-//        }
-//    }
-//
-//    func loadMoreData() {
-//        if !self.isLoading {
-//            self.isLoading = true
-//            DispatchQueue.global().async {
-//                // Fake background loading task for 2 seconds
-//                sleep(2)
-//                // Download more data here
-//                DispatchQueue.main.async {
-//                    self.isLoading = false
-//                    self.pagenum = self.pagenum + 1
-////                    self.limit = self.limit + 10
-//                    self.viewModel.fetchListing(pagenum:self.pagenum,limit:self.limit)
-//                }
-//            }
-//        }
-//    }
-
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
     // MARK: - Tableview delegate
        func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
           // let myCell = tableView.dequeueReusableCellWithIdentifier("myIdentifier", forIndexPath: indexPath)
-           var cell:myCell? = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? myCell
-           if cell == nil {
-               cell = myCell(style: UITableViewCell.CellStyle.default, reuseIdentifier: "Cell")
-           }
-           if let data = self.dataArray[indexPath.row] as? [String:AnyObject]{
-               cell?.nameLabel.text = data["title"] as? String
-               cell?.jobTitleDetailedLabel.text = data["description"] as? String
-               cell?.profileImageView.sd_imageIndicator = SDWebImageActivityIndicator.gray
-               cell?.profileImageView.sd_setImage(with: URL(string: data["imageHref"] as? String ?? ""), completed: nil)
-           }
+        let cell:myCell? = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? myCell
+            cell?.listing = viewModel.roomForIndexPath(indexPath)
+           self.title = viewModel.title
            return cell!
        }
        
        func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-           return self.dataArray.count
+           return viewModel.numberOfRow(section)
        }
        
        func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-              return 80
+              return viewModel.heightForIndexPath(indexPath)
           }
     
 }
 
 class myCell: UITableViewCell {
+
+    
        let containerView:UIView = {
            let view = UIView()
            view.translatesAutoresizingMaskIntoConstraints = false
@@ -183,5 +153,24 @@ class myCell: UITableViewCell {
            
            super.init(coder: aDecoder)
        }
+    
+    open var listing:Rows? {
+            didSet {
+                
+                DispatchQueue.main.async {
+                    self.profileImageView.sd_setImage(with: URL(string: (self.listing?.imageHref ?? "")), placeholderImage: UIImage(named: ""))
+                }
+                profileImageView.layer.borderWidth=1.0
+                profileImageView.layer.cornerRadius = profileImageView.frame.size.height/2
+                profileImageView.clipsToBounds = true
+                profileImageView.layer.masksToBounds = true
+                
+                self.nameLabel.text  = listing?.title
+                self.jobTitleDetailedLabel.text = listing?.description
+                
+                
+                
+            }
+        }
 
 }

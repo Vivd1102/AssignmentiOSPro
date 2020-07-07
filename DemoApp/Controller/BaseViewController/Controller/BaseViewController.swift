@@ -37,11 +37,11 @@ class BaseViewController: UIViewController {
             DispatchQueue.main.async {
                 if type == .success, let message = self?.baseVwModel?.alertMessage  {
 //                    Helper.showNotificationAlert(nil, message, type)
-                 //   UIAlertController.showAlert(title: "", message: message)
+                    UIAlertController.showAlert(title: "", message: message)
                 } else {
                     let message = self?.baseVwModel?.errorMessage ?? "Some Error occured"
 //                    Helper.showNotificationAlert(nil, message , type)
-                 //   UIAlertController.showAlert(title: "", message: message)
+                    UIAlertController.showAlert(title: "", message: message)
                 }
             }
         }

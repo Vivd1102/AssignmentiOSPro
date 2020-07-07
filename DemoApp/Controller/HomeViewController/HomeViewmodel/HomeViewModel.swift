@@ -12,9 +12,9 @@ import UIKit
 class HomeViewModel: BaseViewModel {
     
     var userService: UserServiceProtocol
+    var title : String = ""
 
-
-    private var listingArray:[Base] = [Base]() {
+    private var listingArray:[Rows] = [Rows]() {
         didSet {
             self.reloadListViewClosure?()
         }
@@ -34,15 +34,13 @@ class HomeViewModel: BaseViewModel {
         return self.listingArray.count
     }
     
-    open func roomForIndexPath(_ indexPath: IndexPath) -> Base {
+    open func roomForIndexPath(_ indexPath: IndexPath) -> Rows {
         return self.listingArray[indexPath.row]
     }
     
     open func heightForIndexPath(_ indexPath: IndexPath) -> CGFloat {
-//        if self.listingArray[indexPath.row].enable == true {
-//            return 80
-//        }
-        return 360
+
+        return 80
     }
     
     open func checkForOnStatus() -> Bool {
@@ -55,19 +53,21 @@ class HomeViewModel: BaseViewModel {
     }
     
     open func fetchListing() {
-        self.isLoading = true
+//        self.isLoading = true
         //TODO: Call your api here
         DispatchQueue.main.asyncAfter(deadline: .now()+0.5) {
-            self.isLoading = false
+//            self.isLoading = false
 //            print("Page number",pagenum,limit)
             self.userService.dofectlisting() { (result) in
                 
-                
-                if let user = result {
-                    for item in user {
-                        let postobj = Base.init(dictionary: item)
-                        self.listingArray.append(postobj!)
+                if let user = result{
+                    let obj = Base.init(dictionary: user)
+                    self.title = obj?.title ?? ""
+                    for modelobj in obj?.rows ?? []{
+                        self.listingArray.append(modelobj)
+                        
                     }
+
                 }else{
                     
                 }

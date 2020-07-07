@@ -49,7 +49,10 @@ public class Base {
 	required public init?(dictionary: NSDictionary) {
 
 		title = dictionary["title"] as? String
-        if (dictionary["rows"] != nil) { rows = Rows.modelsFromDictionaryArray(array: dictionary["rows"] as! NSArray) }
+        if (dictionary["rows"] != nil) {
+            rows = Rows.modelsFromDictionaryArray(array: dictionary["rows"] as! NSArray)
+            
+        }
 	}
 
 		
