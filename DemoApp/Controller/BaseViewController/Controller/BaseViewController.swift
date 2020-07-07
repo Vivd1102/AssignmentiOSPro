@@ -4,7 +4,7 @@
 import UIKit
 
 class BaseViewController: UIViewController {
-
+    
     var baseVwModel: BaseViewModel? {
         didSet {
             initBaseModel()
@@ -16,7 +16,7 @@ class BaseViewController: UIViewController {
         // Do any additional setup after loading the view.
         
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -38,12 +38,12 @@ class BaseViewController: UIViewController {
                 if type == .success, let message = self?.baseVwModel?.alertMessage  {
                     UIAlertController.showAlert(title: "", message: message)
                 } else {
-                    let message = self?.baseVwModel?.errorMessage ?? "Some Error occured"
+                    let message = self?.baseVwModel?.errorMessage ?? ""
                     UIAlertController.showAlert(title: "", message: message)
                 }
             }
         }
-            
+        
         baseVwModel?.updateLoadingStatus = { [weak self] () in
             DispatchQueue.main.async {
                 let isLoading = self?.baseVwModel?.isLoading ?? false

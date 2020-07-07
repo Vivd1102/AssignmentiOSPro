@@ -48,7 +48,7 @@ class HomeViewModel: BaseViewModel {
                         self.listingArray.append(modelobj)
                     }
                 }else{
-                    print("Error")
+                    print("")
                 }
             }
         }

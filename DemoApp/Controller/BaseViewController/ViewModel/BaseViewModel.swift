@@ -12,7 +12,7 @@ enum AlertType {
 }
 
 class BaseViewModel: NSObject {
-
+    
     var isLoading: Bool = false {
         didSet {
             self.updateLoadingStatus?()

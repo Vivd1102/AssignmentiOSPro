@@ -49,9 +49,9 @@ public class Rows {
 */
 	required public init?(dictionary: NSDictionary) {
 
-		title = dictionary["title"] as? String
-		description = dictionary["description"] as? String
-		imageHref = dictionary["imageHref"] as? String
+		title = dictionary[Config.title] as? String
+        description = dictionary[Config.description] as? String
+        imageHref = dictionary[Config.imageHref] as? String
 	}
 
 		
@@ -64,9 +64,9 @@ public class Rows {
 
 		let dictionary = NSMutableDictionary()
 
-		dictionary.setValue(self.title, forKey: "title")
-		dictionary.setValue(self.description, forKey: "description")
-		dictionary.setValue(self.imageHref, forKey: "imageHref")
+		dictionary.setValue(self.title, forKey: Config.title)
+		dictionary.setValue(self.description, forKey: Config.description)
+		dictionary.setValue(self.imageHref, forKey: Config.imageHref)
 
 		return dictionary
 	}
